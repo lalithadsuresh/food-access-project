@@ -1,0 +1,187 @@
+"""
+Lalith Suresh
+11-11-2022
+
+This program finds information about population and location demographics
+by using binary and linear search to find information about states, counties,
+and other factors based on their food accessibility.  
+
+"""
+
+# import the library for this lab
+from food_access_lab import *
+
+def choice1():
+
+  """ 
+  Asks user for choice through a selection of numbers (0-3)
+  Parameters: None
+  Returns: The integer of the number the user chose
+  """
+
+  print("Please select one of the following choices.")
+  print("(1) Find by County")
+  print("(2) Find by State")
+  print("(3) Find by population")
+  print("(0) Quit")
+  print("")
+  choice = int(input("Choice "))
+  return choice 
+
+
+def county(lines, countyname):
+
+  """Performs binary search to display info by county
+  Parameters: lines, countyname
+  Return: county, state, pop, lfa, income, senior pop, vehicle
+  
+  """
+
+  low = 0 
+  high = len(lines) - 1
+  found = False
+  while low <= high and not found:
+      mid = (low+high)//2
+      if lines[mid].get_county().lower().startswith(countyname.lower()):
+        found = True
+        foundcounty = lines[mid].get_county()
+        foundstate = lines[mid].get_state()
+        foundpop = lines[mid].get_population()
+        foundlfa = lines[mid].get_housing_total()
+        foundinc = lines[mid].get_people(1)
+        foundsenior = lines[mid].get_seniors(1)
+        foundveh = lines[mid].get_vehicle_access(1)
+        print("================================================================================")
+        print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( "County", "State", \
+        "Total Pop", "LFA Pop", "Income", "Senior", "Vehicle" ) )
+        print("--------------------------------------------------------------------------------")
+        print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( foundcounty[:15], foundstate[:12], \
+        foundpop, foundlfa, foundinc, foundsenior, foundveh ) ) 
+        print("================================================================================")
+      else:
+        if countyname < lines[mid].get_county():
+          high = mid - 1
+        else:
+          low = mid + 1
+
+        
+
+
+def state(lines, statename):
+
+  """Performs linear search to display info found through state
+  Parameters: lines, statename
+  Return: county, state, pop, lfa, income, senior pop, vehicle
+  
+  """
+  
+  found = False
+  print("================================================================================")
+  print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( "County", "State", \
+  "Total Pop", "LFA Pop", "Income", "Senior", "Vehicle" ) )
+  print("--------------------------------------------------------------------------------") 
+  for i in range(len(lines)):
+    if lines[i].get_state().lower().startswith(statename.lower()):
+      found = True
+      foundcounty = lines[i].get_county()
+      foundstate = lines[i].get_state()
+      foundpop = lines[i].get_population()
+      foundlfa = lines[i].get_housing_total()
+      foundinc = lines[i].get_people(1)
+      foundsenior = lines[i].get_seniors(1)
+      foundveh = lines[i].get_vehicle_access(1)
+      print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( foundcounty[:15], foundstate[:12], \
+      foundpop, foundlfa, foundinc, foundsenior, foundveh ) )  
+    
+  if found == False:
+      print("No records found.")
+      
+      
+      
+  print("================================================================================")
+
+
+def population(lines, population1):
+
+  """Performs linear search to display info found through population
+  Parameters: lines, population1
+  Return: county, state, pop, lfa, income, senior pop, vehicle
+  
+  """
+
+  found = False
+  print("================================================================================")
+  print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( "County", "State", \
+  "Total Pop", "LFA Pop", "Income", "Senior", "Vehicle" ) )
+  print("--------------------------------------------------------------------------------")
+  for i in range(len(lines)):
+    if lines[i].get_population() > population1:
+      found = True
+      foundcounty = lines[i].get_county()
+      foundstate = lines[i].get_state()
+      foundpop = lines[i].get_population()
+      foundlfa = lines[i].get_housing_total()
+      foundinc = lines[i].get_people(1)
+      foundsenior = lines[i].get_seniors(1)
+      foundveh = lines[i].get_vehicle_access(1)
+      print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( foundcounty[:15], foundstate[:12], \
+      foundpop, foundlfa, foundinc, foundsenior, foundveh ) ) 
+    
+  print("================================================================================")
+
+
+def valid(choice):
+
+  """If choice is 1,2,3,0, then it's valid
+  Parameters: choice
+  Returns: True or False """
+
+  list2 = [1, 2, 3, 0]
+  if choice in list2:
+    return True
+  else:
+    return False
+
+
+
+
+def main():
+
+  file_obj = open("/data/cs21/food_access/food_access.csv", "r")
+  raw_data = file_obj.read()
+  lines = raw_data.splitlines()
+
+  list1 = []
+  for i in range(len(lines)):
+    one_line = lines[i]
+    record = FoodAccessRecord(one_line)
+    list1.append(record)
+ 
+  choice = choice1()
+  while valid(choice) == False:
+    print("Invalid choice, try again!")
+    choice = choice1()
+
+      
+  while valid(choice) == True:
+    if choice == 1:
+      countyname = str(input("County name(or prefix?) "))
+      county(list1, countyname)
+      break
+    if choice == 2:
+      statename = str(input("State name(or prefix?) "))
+      state(list1, statename)
+      break
+    if choice == 3:
+      population1 = int(input("Minimum population "))
+    if (population1 < 0):
+      print("Invalid. Try a positive number.")
+    elif (population1 > 0):
+      population(list1, population1)
+      break
+    if choice == 0:
+      print("Thank you for your time!")
+      break
+
+
+main()
