@@ -103,7 +103,7 @@ def state(lines, statename):
 
 def population(lines, population1):
 
-  """Performs linear search to display info found through population
+  """Performs linear search to display information found through population
   Parameters: lines, population1
   Return: county, state, pop, lfa, income, senior pop, vehicle
   
