@@ -1,0 +1,199 @@
+"""
+Lalith Suresh 
+11-16-2022 
+"""
+
+from food_access_lab import *
+
+
+def choice1():
+
+  """ 
+  Asks user for choice through a selection of numbers (0-3)
+  Parameters: None
+  Returns: The integer of the number the user chose
+  """
+
+  print("Please select one of the following choices.")
+  print("(1) Filter records by state name")
+  print("(2) Filter records by total population")
+  print("(3) Sort by state name")
+  print("(4) Sort by total population")
+  print("(5) Reset list to all records")
+  print("(0) Quit")
+  choice = int(input("Choice "))
+  return choice 
+
+def statename(lines, statename1):
+
+  '''
+  Using linear search, this function retrieves 
+  information about food access based on whether
+  the user's input matches the listed states on 
+  the list and appends values for each line in the list
+  parameters: lines, statename1
+  returns: list appended with new values
+  '''
+
+  lst1 = []
+  for i in range(len(lines)):
+    if lines[i].get_state().lower() == statename1.lower():
+      lst1.append(lines[i])
+  data(lst1)
+
+  return lst1 
+
+def data(lines):
+
+  '''
+  Prints the dataset and is the template of showing 
+  data for the other functions.
+  Parameters: lines
+  
+  '''
+
+  if len(lines) == 0:
+    print("No records found.")
+
+  else:
+    print("================================================================================")
+    print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( "County", "State", \
+    "Total Pop", "LFA Pop", "Income", "Senior", "Vehicle" ) )
+    print("--------------------------------------------------------------------------------") 
+    for i in range(len(lines)):
+      foundcounty = lines[i].get_county()
+      foundstate = lines[i].get_state()
+      foundpop = lines[i].get_population()
+      foundlfa = lines[i].get_housing_total()
+      foundinc = lines[i].get_people(1)
+      foundsenior = lines[i].get_seniors(1)
+      foundveh = lines[i].get_vehicle_access(1)
+      print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( foundcounty[:15], foundstate[:12], \
+      foundpop, foundlfa, foundinc, foundsenior, foundveh ) )  
+    print("================================================================================")
+
+
+
+def min_max_pop(lines, minval, maxval):
+
+  lst1 = []
+  for i in range(len(lines)):
+      if minval <= lines[i].get_population() and maxval >= lines[i].get_population():
+        lst1.append(lines[i])
+
+  data(lst1) 
+  return lst1
+
+
+def findmin(start, lines):
+
+  min1 = start
+  for i in range(min1, len(lines)):
+    if lines[i].get_population()<lines[min1].get_population():
+      min1 = i
+
+  return min1
+
+def populationsort(lst):
+
+  for i in range(len(lst)):
+
+    min1 = findmin(i, lst)
+    t = lst[i]
+    lst[i] = lst[min1]
+    lst[min1] = t
+
+  data(lst)
+  return lst
+  
+
+
+
+
+
+  # found = lines[i].getpopulation()
+  # lines[i] = lines[max].getpopulation()
+  # found = lines[max].getpopulation()
+  # foundcounty = lines[max].get_county()
+  # foundstate = lines[max].get_state()
+  # foundpop = lines[max].get_population()
+  # foundlfa = lines[max].get_housing_total()
+  # foundinc = lines[max].get_people(1)
+  # foundsenior = lines[max].get_seniors(1)
+  # foundveh = lines[max].get_vehicle_access(1)
+  # print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( foundcounty[:15], foundstate[:12], \
+  # foundpop, foundlfa, foundinc, foundsenior, foundveh ) )  
+
+def statesort(lines):
+
+  print("================================================================================")
+  print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( "County", "State", \
+  "Total Pop", "LFA Pop", "Income", "Senior", "Vehicle" ) )
+
+  for i in range (1, len(lines)):
+    currentval = lines[i]
+    position = i
+
+    while position>0 and lines[position-1].get_population()<currentval.get_population():
+      lines[position] = lines[position-1]
+      position = position-1
+      lines[position] = currentval
+
+    foundcounty = currentval.get_county()
+    foundstate = currentval.get_state()
+    foundpop = currentval.get_population()
+    foundlfa = currentval.get_housing_total()
+    foundinc = currentval.get_people(1)
+    foundsenior = currentval.get_seniors(1)
+    foundveh = currentval.get_vehicle_access(1)
+    print("| %15s | %12s |%9s| %7s| %6s | %6s | %7s|" % ( foundcounty[:15], foundstate[:12], \
+    foundpop, foundlfa, foundinc, foundsenior, foundveh ) )  
+    
+  print("================================================================================")
+
+
+
+def main():
+
+  file_obj = open("/data/cs21/food_access/food_access.csv", "r")
+  raw_data = file_obj.read()
+  lines = raw_data.splitlines()
+
+
+  list1 = []
+  for i in range(len(lines)):
+    one_line = lines[i]
+    record = FoodAccessRecord(one_line)
+    list1.append(record)
+
+  copiedlist1 = list1.copy()
+    
+
+  choice = choice1()
+  while True:
+    if choice == 1:
+      statename1 = str(input("State name(or prefix?) "))
+      copiedlist1 = statename(copiedlist1, statename1)
+    elif choice == 2:
+      minval = int(input("Minimum population? "))
+      maxval = int(input("Maximum population? "))
+      copiedlist1 = min_max_pop(copiedlist1, minval, maxval)
+    elif choice == 3:
+      copiedlist1 = statesort(copiedlist1)
+    elif choice == 4:
+      copiedlist1 = populationsort(copiedlist1)
+    elif choice == 5:
+      print("Resetting list")
+      copiedlist1 = list1.copy()
+    elif choice == 0:
+      print("Thank you for your time!")
+      break
+    else:
+      print("Invalid input! Try again!")
+      choice = choice1()
+    choice = choice1()
+
+
+
+
+main()
